@@ -576,7 +576,7 @@ class IRC_Server:
                             print(("*** [%s] %s") % (self.irc_host, e))
 
     def parse_issue(self, channel, message):
-        def parse(channel, message, matches, api_url, result_url, allow_low_numbers=False):
+        def parse(channel, message, matches, api_url, result_url, allow_low_numbers=True):
             if re.search("^#", channel):
                 mentioned = []
                 for bug_report in matches:
@@ -596,42 +596,24 @@ class IRC_Server:
                         if 'pull_request' in y:
                             if y['pull_request']['html_url'] != None:
                                 type = "Pull request"
-                        self.send_message_to_channel( ("%s #%s (%s) by %s: %s | %s%s") %
-                                (type, bug_report, y['state'], y['user']['login'], y['title'], result_url, bug_report), channel)
+
+                        pull_or_issues = "pull" if type == "Pull request" else "issues"
+                        result_url = result_url + "%s/%s" % (pull_or_issues, bug_report)
+
+                        self.send_message_to_channel(("%s #%s (%s) by %s: %s | %s") %
+                                (type,
+                                bug_report,
+                                y['state'], # "closed" or "open"
+                                y['user']['login'], # github username
+                                y['title'], # issue/pr title
+                                result_url),
+                                channel)
                     except Exception as e:
                         print(("*** [%s] %s") % (self.irc_host, e))
-        def parse_map(channel, message, matches):
-            if not re.search("^#", channel):
-                return
-            mentioned = []
-            for map_id in matches:
-                if map_id == '':
-                    return
-                if map_id in mentioned:
-                    continue
-                mentioned.append(map_id)
-                url = "http://resource.openra.net/map/id/%s" % map_id
-                try:
-                    data = self.data_from_url(url, None)
-                    y = json.loads(data)
-                    self.send_message_to_channel('Map: %s by %s | %s' % (y[0]['title'], y[0]['author'], 'http://resource.openra.net/maps/'+str(y[0]['id'])+'/'), channel)
-                except Exception as e:
-                        print(("*** [%s] %s") % (self.irc_host, e))
+
         matches = re.findall(r"\B"+"#([0-9]*)", message)
-        if ( matches != [] ):
-            parse(channel, message, matches, 'https://api.github.com/repos/OpenRA/OpenRA/issues/', 'http://bugs.openra.net/')
-        matches = re.findall("web#([0-9]*)", message)
-        if ( matches != [] ):
-            parse(channel, message, matches, 'https://api.github.com/repos/OpenRA/OpenRAWeb/issues/', 'https://github.com/OpenRA/OpenRAWeb/issues/', True)
-        matches = re.findall("master#([0-9]*)", message)
-        if ( matches != [] ):
-            parse(channel, message, matches, 'https://api.github.com/repos/OpenRA/OpenRAMasterServer/issues/', 'https://github.com/OpenRA/OpenRAMasterServer/issues/', True)
-        matches = re.findall("resource#([0-9]*)", message)
-        if ( matches != [] ):
-            parse(channel, message, matches, 'https://api.github.com/repos/OpenRA/OpenRA-Resources/issues/', 'https://github.com/OpenRA/OpenRA-Resources/issues/', True)
-        matches = re.findall("map#([0-9]*)", message)
-        if ( matches != [] ):
-            parse_map(channel, message, matches)
+        if (matches != []):
+            parse(channel, message, matches, 'https://api.github.com/repos/angered-ghandi/OpenAOE/issues/', 'https://github.com/angered-ghandi/OpenAOE/')
 
     def safe_eval(self, expr, symbols={}):
             return eval(expr, dict(__builtins__=None), symbols)
