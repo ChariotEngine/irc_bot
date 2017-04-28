@@ -613,7 +613,7 @@ class IRC_Server:
 
         matches = re.findall(r"\B"+"#([0-9]*)", message)
         if (matches != []):
-            parse(channel, message, matches, 'https://api.github.com/repos/angered-ghandi/OpenAOE/issues/', 'https://github.com/angered-ghandi/OpenAOE/')
+            parse(channel, message, matches, 'https://api.github.com/repos/ChariotEngine/Chariot/issues/', 'https://github.com/ChariotEngine/Chariot/')
 
     def safe_eval(self, expr, symbols={}):
             return eval(expr, dict(__builtins__=None), symbols)
