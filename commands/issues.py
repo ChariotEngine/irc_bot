@@ -14,7 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Shows last not commented issues or pull requests from OpenAOE bug tracker. Amount as an optional argument.
+Shows last not commented issues or pull requests from Chariot bug tracker. Amount as an optional argument.
 """
 
 import urllib.request
@@ -35,12 +35,12 @@ def issues(self, user, channel):
 	else:
 		amount = 3
 		use_notice = False
-	url = 'https://api.github.com/repos/angered-ghandi/OpenAOE/issues'
+	url = 'https://api.github.com/repos/ChariotEngine/Chariot/issues'
 	try:
 		data = urllib.request.urlopen(url).read().decode()
 		data = json.loads(data)
 	except:
-		print("*** [%s] Could not fetch a list of OpenAOE bugs, apparently 'Exceed Rate Limit'" % self.irc_host)
+		print("*** [%s] Could not fetch a list of Chariot bugs, apparently 'Exceed Rate Limit'" % self.irc_host)
 		return
 	result = []
 	for report in data:
@@ -55,6 +55,6 @@ def issues(self, user, channel):
 	for i in range(len(result)):
 		pull_or_issues = "pull" if result[i][2] == "Pull request" else "issues"
 		if not use_notice:
-			self.send_reply( "%s: https://github.com/angered-ghandi/OpenAOE/%s/%s | %s" % (result[i][2], pull_or_issues, result[i][0], result[i][1]), user, channel)
+			self.send_reply( "%s: https://github.com/ChariotEngine/Chariot/%s/%s | %s" % (result[i][2], pull_or_issues, result[i][0], result[i][1]), user, channel)
 		else:
-			self.send_notice( "%s: https://github.com/angered-ghandi/OpenAOE/%s/%s | %s" % (result[i][2], pull_or_issues, result[i][0], result[i][1]), user)
+			self.send_notice( "%s: https://github.com/ChariotEngine/Chariot/%s/%s | %s" % (result[i][2], pull_or_issues, result[i][0], result[i][1]), user)
