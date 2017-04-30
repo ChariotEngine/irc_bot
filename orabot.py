@@ -533,6 +533,9 @@ class IRC_Server:
             raise Exception(("Exception: %s does not contain title") % (self.irc_host, url))
 
     def parse_link(self, channel, user, message):
+        if user == "gh-chariot":
+            return
+
         if re.search('.*http.*://.*', message):
             
             def check_localnetwork(self, url):
